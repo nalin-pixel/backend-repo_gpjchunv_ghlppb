@@ -8,14 +8,14 @@ Each Pydantic model represents a collection in your database.
 Model name is converted to lowercase for the collection name:
 - User -> "user" collection
 - Product -> "product" collection
-- BlogPost -> "blogs" collection
+- BlogPost -> "blogpost" collection
 """
 
 from pydantic import BaseModel, Field
-from typing import Optional
+from typing import Optional, List
+from datetime import datetime
 
-# Example schemas (replace with your own):
-
+# Example schemas (you can keep these if needed elsewhere)
 class User(BaseModel):
     """
     Users collection schema
@@ -38,11 +38,26 @@ class Product(BaseModel):
     category: str = Field(..., description="Product category")
     in_stock: bool = Field(True, description="Whether product is in stock")
 
-# Add your own schemas here:
-# --------------------------------------------------
+# Blog-specific schemas
+class Category(BaseModel):
+    """Blog categories
+    Collection: "category"
+    """
+    name: str = Field(..., description="Category name")
+    slug: str = Field(..., description="URL-friendly identifier")
+    description: Optional[str] = Field(None, description="Short description")
 
-# Note: The Flames database viewer will automatically:
-# 1. Read these schemas from GET /schema endpoint
-# 2. Use them for document validation when creating/editing
-# 3. Handle all database operations (CRUD) directly
-# 4. You don't need to create any database endpoints!
+class BlogPost(BaseModel):
+    """Blog posts
+    Collection: "blogpost"
+    """
+    title: str
+    slug: str
+    excerpt: Optional[str] = None
+    content: str
+    cover_image: Optional[str] = None
+    category: Optional[str] = Field(None, description="Category slug")
+    tags: List[str] = []
+    author: Optional[str] = "Admin"
+    published: bool = True
+    published_at: Optional[datetime] = None
